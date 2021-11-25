@@ -25,6 +25,7 @@ use function stripos;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExceptionWrapper;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\PHPTAssertionFailedError;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestFailure;
@@ -308,8 +309,13 @@ final class TeamCity extends DefaultResultPrinter
                 $message .= ' : ';
             }
         }
+        $message .= $t->getMessage();
 
-        return $message . $t->getMessage();
+        if ($t instanceof PHPTAssertionFailedError) {
+            $message .= $t->getDiff();
+        }
+
+        return $message;
     }
 
     private static function getDetails(Throwable $t): string
